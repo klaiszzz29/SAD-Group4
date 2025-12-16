@@ -35,13 +35,14 @@ public class ConsultationOverlay{
         JLabel lbl2 = new JLabel("Doctor's Findings");
         JLabel lbl3 = new JLabel("Diagnoses");
         JLabel lbl4 = new JLabel("Prescriptions");
-        JLabel lbl5 = new JLabel("Doctor's Name");
+        JLabel lbl5 = new JLabel("Doctor's Name: ");
 
         headerLabel.setHorizontalAlignment(SwingConstants.CENTER);
         lbl1.setAlignmentX(Component.LEFT_ALIGNMENT);
         lbl2.setAlignmentX(Component.LEFT_ALIGNMENT);
         lbl3.setAlignmentX(Component.LEFT_ALIGNMENT);
         lbl4.setAlignmentX(Component.LEFT_ALIGNMENT);
+        lbl5.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         int row = 4;
         int col = 66;
@@ -49,6 +50,7 @@ public class ConsultationOverlay{
         JTextArea findingsTA = new JTextArea(row, col);
         JTextArea diagnosesTA = new JTextArea(row, col);
         JTextArea prescriptionsTA = new JTextArea(row, col);
+        JTextField doctorTF = new JTextField(20);
 
         symptomsTA.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
         symptomsTA.setLineWrap(true);
@@ -67,6 +69,7 @@ public class ConsultationOverlay{
         findingsTA.setAlignmentX(Component.LEFT_ALIGNMENT);
         diagnosesTA.setAlignmentX(Component.LEFT_ALIGNMENT);
         prescriptionsTA.setAlignmentX(Component.LEFT_ALIGNMENT);
+        doctorTF.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         dashboard.setFont("Arial", Font.BOLD, 28, headerLabel);
         dashboard.setFont("Arial", Font.BOLD, 20, lbl1, lbl2, lbl3, lbl4, lbl5);
@@ -82,9 +85,20 @@ public class ConsultationOverlay{
         cancelButton.setFont(new Font("Arial", Font.BOLD, 18));
 
         saveButton.addActionListener(e -> {
-            dashboard.notification(frame, "Form Saved Successfully");
-            
-            new Timer(1500, ev -> frame.dispose()).start();
+            String symptoms = symptomsTA.getText().trim();
+            String findings = findingsTA.getText().trim();
+            String diagnoses = diagnosesTA.getText().trim();
+            String prescriptions = prescriptionsTA.getText().trim();
+            String doctorName = doctorTF.getText().trim();
+
+            if(!symptoms.isEmpty() && !findings.isEmpty() && !diagnoses.isEmpty() && !prescriptions.isEmpty() && !doctorName.isEmpty()) {
+                Queries.addConsultationRecord(symptoms, findings, diagnoses, prescriptions, doctorName);
+                dashboard.notification(frame, "Form Saved Successfully");
+
+                new Timer(1500, ev -> frame.dispose()).start();
+            } else{
+                JOptionPane.showMessageDialog(frame, "Please fill all fields");
+            }
         });
 
         cancelButton.addActionListener(e -> {
@@ -99,11 +113,24 @@ public class ConsultationOverlay{
         cancelButton.setPreferredSize(new Dimension(width, height));
         cancelButton.setMaximumSize(new Dimension(width, height));
         cancelButton.setMinimumSize(new Dimension(width, height));
+        doctorTF.setPreferredSize(new Dimension(240, height));
+        doctorTF.setMaximumSize(new Dimension(240, height));
+        doctorTF.setMinimumSize(new Dimension(240, height));
+
+        JPanel doctorPanel = new JPanel();
+        doctorPanel.setLayout(new BoxLayout(doctorPanel, BoxLayout.X_AXIS));
+        doctorPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
+        doctorPanel.setOpaque(false);
+        doctorPanel.add(lbl5);
+        doctorPanel.add(doctorTF);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel.setOpaque(false);
 
+        buttonPanel.add(doctorPanel);
+        buttonPanel.add(Box.createHorizontalGlue());
         buttonPanel.add(saveButton);
         buttonPanel.add(cancelButton);
 

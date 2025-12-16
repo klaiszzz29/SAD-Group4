@@ -16,7 +16,7 @@ import javax.swing.table.TableColumnModel;
 
 public class dashboard{
     
-    private static GridBagConstraints gbc(int x, int y, int anchor, double weightx, double weighty, int fill){
+    public static GridBagConstraints gbc(int x, int y, int anchor, double weightx, double weighty, int fill){
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = x;
         gbc.gridy = y;
@@ -43,7 +43,7 @@ public class dashboard{
         }
     }
 
-    private static JPanel sidePanelIconContainers(JLabel label){
+    public static JPanel sidePanelIconContainers(JLabel label){
         JPanel panel = new JPanel();
         panel.setOpaque(false);
         panel.setLayout(new BorderLayout());
@@ -52,7 +52,7 @@ public class dashboard{
         return panel;
     }
 
-    private static BufferedImage roundImage(BufferedImage original, int diameter){
+    public static BufferedImage roundImage(BufferedImage original, int diameter){
         BufferedImage rounded = new BufferedImage(diameter, diameter, BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D g2 = rounded.createGraphics();
@@ -63,7 +63,7 @@ public class dashboard{
         return rounded;
     }
 
-    private static BufferedImage resizeImage(BufferedImage original, int sizeWH){
+    public static BufferedImage resizeImage(BufferedImage original, int sizeWH){
         BufferedImage resized = new BufferedImage(sizeWH, sizeWH, BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D g2 = resized.createGraphics();
@@ -109,7 +109,7 @@ public class dashboard{
         }
     }
 
-    private static void expandSidebar(JPanel sidePanel, JLabel profileLabel, JLabel dashboardLabel, JLabel patientLabel, JLabel consultLabel, 
+    public static void expandSidebar(JPanel sidePanel, JLabel profileLabel, JLabel dashboardLabel, JLabel patientLabel, JLabel consultLabel, 
         JLabel appointmentLabel, JPanel mainPanel, BufferedImage original){ 
             int diameter = 150;
 
@@ -141,7 +141,7 @@ public class dashboard{
             mainPanel.repaint(); 
     }
 
-    private static void collapseSidebar(JPanel sidePanel, JLabel profileLabel, JLabel dashboardLabel, JLabel patientLabel, JLabel consultLabel, 
+    public static void collapseSidebar(JPanel sidePanel, JLabel profileLabel, JLabel dashboardLabel, JLabel patientLabel, JLabel consultLabel, 
         JLabel appointmentLabel, JPanel mainPanel, BufferedImage original){ 
             int diameter = 70; 
             
@@ -353,7 +353,12 @@ public class dashboard{
             }
 
             public void mousePressed(java.awt.event.MouseEvent e){
-                new ConsultationOverlay();
+                try {
+                    new Patientprofilepage().setVisible(true);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                mainFrame.dispose();
             }
         });
 
