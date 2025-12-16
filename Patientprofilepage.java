@@ -71,8 +71,8 @@ public class Patientprofilepage extends JFrame {
         ));
         tableScroll.getViewport().setBackground(Color.decode("#CAE9F5"));
 
-        JButton recordButton = new JButton("RECORD", scaleIcon("/icons/record.png", 24, 24));
-        JButton deleteButton = new JButton("DELETE", scaleIcon("/icons/delete.png", 24, 24));
+        JButton recordButton = new JButton("RECORD");
+        JButton deleteButton = new JButton("DELETE");
 
         recordButton.addActionListener(e -> {
             DefaultTableModel model = (DefaultTableModel) historyTable.getModel();
@@ -344,4 +344,5 @@ public class Patientprofilepage extends JFrame {
             }
         });
     }
+
 }
