@@ -1,10 +1,13 @@
 import javax.swing.*;
 import java.awt.*;
 
-public class ConsultationOverlay{
-    public ConsultationOverlay(){
+public class ConsultationOverlay {
+    private JTable table;
+
+    public ConsultationOverlay(JTable table) {
+        this.table = table;
         JFrame frame = new JFrame();
-        frame.setSize(800, 700);
+        frame.setSize(800, 800);
         frame.setLocationRelativeTo(null);
         frame.setUndecorated(true);
 
@@ -70,7 +73,7 @@ public class ConsultationOverlay{
         diagnosesTA.setAlignmentX(Component.LEFT_ALIGNMENT);
         prescriptionsTA.setAlignmentX(Component.LEFT_ALIGNMENT);
         doctorTF.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
+
         dashboard.setFont("Arial", Font.BOLD, 28, headerLabel);
         dashboard.setFont("Arial", Font.BOLD, 20, lbl1, lbl2, lbl3, lbl4, lbl5);
         symptomsTA.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -80,30 +83,9 @@ public class ConsultationOverlay{
 
         JButton saveButton = new JButton("SAVE");
         JButton cancelButton = new JButton("CANCEL");
-    
+
         saveButton.setFont(new Font("Arial", Font.BOLD, 18));
         cancelButton.setFont(new Font("Arial", Font.BOLD, 18));
-
-        saveButton.addActionListener(e -> {
-            String symptoms = symptomsTA.getText().trim();
-            String findings = findingsTA.getText().trim();
-            String diagnoses = diagnosesTA.getText().trim();
-            String prescriptions = prescriptionsTA.getText().trim();
-            String doctorName = doctorTF.getText().trim();
-
-            if(!symptoms.isEmpty() && !findings.isEmpty() && !diagnoses.isEmpty() && !prescriptions.isEmpty() && !doctorName.isEmpty()) {
-                Queries.addConsultationRecord(symptoms, findings, diagnoses, prescriptions, doctorName);
-                dashboard.notification(frame, "Form Saved Successfully");
-
-                new Timer(1500, ev -> frame.dispose()).start();
-            } else{
-                JOptionPane.showMessageDialog(frame, "Please fill all fields");
-            }
-        });
-
-        cancelButton.addActionListener(e -> {
-            frame.dispose();
-        });
 
         int width = 120;
         int height = 30;
@@ -136,7 +118,64 @@ public class ConsultationOverlay{
 
         int border = 30;
         dashboard.setBorder(border, border, border, border, panel);
-        
+
+        JPanel dropPanel = new JPanel();
+        dropPanel.setLayout(new BoxLayout(dropPanel, BoxLayout.X_AXIS));
+        dropPanel.setOpaque(false);
+        dropPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        String[] severityOption = { "Mild", "Moderate", "Severe", "Critical" };
+        String[] statusOption = { "Stable", "Unstable", "Improving", "Deteriorating" };
+
+        JComboBox<String> severityComboBox = new JComboBox<>(severityOption);
+        JComboBox<String> statusComboBox = new JComboBox<>(statusOption);
+
+        severityComboBox.setPreferredSize(new Dimension(125, height));
+        severityComboBox.setMaximumSize(new Dimension(125, height));
+        severityComboBox.setMinimumSize(new Dimension(125, height));
+        statusComboBox.setPreferredSize(new Dimension(150, height));
+        statusComboBox.setMaximumSize(new Dimension(150, height));
+        statusComboBox.setMinimumSize(new Dimension(150, height));
+
+        severityComboBox.setFont(new Font("Arial", Font.BOLD, 18));
+        statusComboBox.setFont(new Font("Arial", Font.BOLD, 18));
+
+        saveButton.addActionListener(e -> {
+            String symptoms = symptomsTA.getText().trim();
+            String findings = findingsTA.getText().trim();
+            String diagnoses = diagnosesTA.getText().trim();
+            String prescriptions = prescriptionsTA.getText().trim();
+            String severity = (String) severityComboBox.getSelectedItem();
+            String status = (String) statusComboBox.getSelectedItem();
+            String doctorName = doctorTF.getText().trim();
+
+            if (!symptoms.isEmpty() && !findings.isEmpty() && !diagnoses.isEmpty() && !prescriptions.isEmpty()
+                    && !doctorName.isEmpty()) {
+                Queries.addConsultationRecord(symptoms, findings, diagnoses, prescriptions, severity, status,
+                        doctorName);
+
+                SwingUtilities.invokeLater(() -> {
+                    Queries.displayConsultationRecord(table);
+                });
+                dashboard.notification(frame, "Form Saved Successfully");
+
+                Timer timer = new Timer(1500, ev -> frame.dispose());
+                timer.setRepeats(false);
+                timer.start();
+            } else {
+                JOptionPane.showMessageDialog(frame, "Please fill all fields");
+            }
+        });
+
+        cancelButton.addActionListener(e -> {
+            frame.dispose();
+        });
+
+        dropPanel.add(severityComboBox);
+        dropPanel.add(Box.createHorizontalStrut(20));
+        dropPanel.add(statusComboBox);
+        dropPanel.add(Box.createVerticalStrut(0));
+
         headerPanel.add(headerLabel);
         panel.add(headerPanel);
         bodyPanel.add(Box.createVerticalStrut(25));
@@ -151,8 +190,10 @@ public class ConsultationOverlay{
         bodyPanel.add(Box.createVerticalStrut(30));
         bodyPanel.add(lbl4);
         bodyPanel.add(prescriptionsTA);
+        bodyPanel.add(Box.createVerticalStrut(30));
         bodyWrapper.add(bodyPanel);
         panel.add(bodyWrapper);
+        bodyPanel.add(dropPanel);
         panel.add(buttonPanel);
 
         contentPane.add(panel, BorderLayout.CENTER);

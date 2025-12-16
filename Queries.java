@@ -1,46 +1,56 @@
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
-public class Queries{
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+
+public class Queries {
     // SAMPLE QUERY
-    public static boolean addPatient(String name, String diagnosis) {
-        String sql = "INSERT INTO patients (name, diagnosis) VALUES (?, ?)";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    public static boolean addConsultationRecord(String symptoms, String findings, String diagnoses, String prescription,
+            String severity, String status, String doctorName) {
+        String sql = "insert into consultationRecord(patientSymptoms, doctorFindings, diagnoses, prescriptions, severity, status, doctorName) values(?, ?, ?, ?, ?, ?, ?)";
 
-            pstmt.setString(1, name);
-            pstmt.setString(2, diagnosis);
-            int rows = pstmt.executeUpdate();
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, symptoms);
+            ps.setString(2, findings);
+            ps.setString(3, diagnoses);
+            ps.setString(4, prescription);
+            ps.setString(5, severity);
+            ps.setString(6, status);
+            ps.setString(7, doctorName);
+            int rows = ps.executeUpdate();
 
-            System.out.println("✅ Patient added successfully!");
             return rows > 0;
-
         } catch (SQLException e) {
-            System.out.println("❌ Error adding patient:");
             e.printStackTrace();
+            System.out.println("add consult error");
             return false;
         }
     }
 
-    public static boolean addConsultationRecord(String symptoms, String findings, String diagnoses, String prescription, String doctorName) {
-        String sql = "insert into consultationRecord(patientSymptoms, doctorFindings, diagnoses, prescriptions, doctorName) values(?, ?, ?, ?, ?)";
+    public static void displayConsultationRecord(JTable table) {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
 
-        try(Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, symptoms);
-                ps.setString(2, findings);
-                ps.setString(3, diagnoses);
-                ps.setString(4, prescription);
-                ps.setString(5, doctorName);
-                int rows = ps.executeUpdate();
+        String sql = "select dateOfVisit, diagnoses, severity, status, totalVisit from consultationRecord";
 
-                return rows > 0;
-        } catch(SQLException e){
+        try (Connection conn = DatabaseConnection.getConnection();
+                Statement st = conn.createStatement();
+                ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Date date = rs.getDate("dateOfVisit");
+                String diagnoses = rs.getString("diagnoses");
+                String severity = rs.getString("severity");
+                String status = rs.getString("status");
+                int visits = rs.getInt("totalVisit");
+
+                model.addRow(new Object[] { date, diagnoses, severity, status, visits });
+            }
+
+        } catch (SQLException e) {
+            System.out.println("display consult error");
             e.printStackTrace();
-            return false;
         }
     }
 }

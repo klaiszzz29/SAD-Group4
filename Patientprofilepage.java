@@ -13,7 +13,7 @@ public class Patientprofilepage extends JFrame {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setTitle("Patient Profile Page");
         setSize(screenSize.width, screenSize.height);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
@@ -50,10 +50,9 @@ public class Patientprofilepage extends JFrame {
         profilePanel.add(detailsPanel, BorderLayout.CENTER);
 
         String[] columns = { "Date of Visit", "Diagnosis", "Severity", "Status", "Total Visits" };
-        Object[][] data = {
-                { "May 27, 2025", "Common Cold", "Low", "Cured", "1" }
-        };
-        JTable historyTable = new JTable(new DefaultTableModel(data, columns));
+        DefaultTableModel model = new DefaultTableModel(columns, 0);
+
+        JTable historyTable = new JTable(model);
         historyTable.setBackground(Color.decode("#CAE9F5"));
         historyTable.setGridColor(Color.GRAY);
         historyTable.setSelectionBackground(Color.decode("#AEDCEB"));
@@ -69,23 +68,20 @@ public class Patientprofilepage extends JFrame {
                 Color.decode("#86C5D8")));
         tableScroll.getViewport().setBackground(Color.decode("#CAE9F5"));
 
+        Queries.displayConsultationRecord(historyTable);
+
         JButton recordButton = new JButton("RECORD");
         JButton deleteButton = new JButton("DELETE");
 
         recordButton.addActionListener(e -> {
-            new ConsultationOverlay();
-            DefaultTableModel model = (DefaultTableModel) historyTable.getModel();
-            model.addRow(new Object[] {
-                    "Date:", "Diagnosis:", "Severity:", "Status:", model.getRowCount() + 1
-            });
-            JOptionPane.showMessageDialog(this, "New record added successfully!");
+            new ConsultationOverlay(historyTable);
         });
 
         deleteButton.addActionListener(e -> {
             int selectedRow = historyTable.getSelectedRow();
             if (selectedRow != -1) {
-                DefaultTableModel model = (DefaultTableModel) historyTable.getModel();
-                model.removeRow(selectedRow);
+                DefaultTableModel model2 = (DefaultTableModel) historyTable.getModel();
+                model2.removeRow(selectedRow);
                 JOptionPane.showMessageDialog(this, "Record deleted successfully!");
             } else {
                 JOptionPane.showMessageDialog(this, "Please select a row to delete.");
@@ -226,10 +222,6 @@ public class Patientprofilepage extends JFrame {
 
                 dashboard.collapseSidebar(sidePanel, profileLabel, dashboardLabel, patientLabel, consultLabel,
                         appointmentLabel, mainPanel, original);
-            }
-
-            public void mousePressed(java.awt.event.MouseEvent e) {
-                new ConsultationOverlay();
             }
         });
 
