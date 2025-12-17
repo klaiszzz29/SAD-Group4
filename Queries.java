@@ -56,9 +56,9 @@ public class Queries {
     }
 
     public static void savePatientForms(PatientFormDrafts draft) throws SQLException {
-        String sqlPersonalInfo = "insert into patient_and_contactInformation (patientName, address, date_of_birth, PhoneNumber, Gender, Email, emergencyContact, relationship, emergencyContact_phoneNumber, guardianName, guardian_phoneNumber) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sqlPersonalInfo = "insert into personal_and_contactInformation (patientName, address, date_of_birth, PhoneNumber, Gender, Email, emergencyContact, relationship, emergencyContact_phoneNumber, guardianName, guardian_phoneNumber) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         String sqlMedicalHistory = "insert into medicalHistory(PatientID, reason_for_visit, past_medical_problems, medications, allergies) values(?, ?, ?, ?, ?)";
-        String sqlBillingInfo = "insert into insurance_and_billingInfor (patientID, insuranceProvider, insuranceID, name, address, phoneNumber, billing_address, paymentMethod, cardNumber) values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sqlBillingInfo = "insert into insurance_and_billingInfo (patientID, insurance_Provider, insuranceID, name, address, phoneNumber, billing_address, paymentMethod, cardNumber) values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection conn = DatabaseConnection.getConnection();
         conn.setAutoCommit(false);
@@ -75,9 +75,10 @@ public class Queries {
             psPersonalInfo.setString(5, draft.gender);
             psPersonalInfo.setString(6, draft.email);
             psPersonalInfo.setString(7, draft.emergencyContact);
-            psPersonalInfo.setString(8, draft.emergencyPhone);
-            psPersonalInfo.setString(9, draft.guardianName);
-            psPersonalInfo.setString(10, draft.guardianPhone);
+            psPersonalInfo.setString(8, draft.relationship);
+            psPersonalInfo.setString(9, draft.emergencyPhone);
+            psPersonalInfo.setString(10, draft.guardianName);
+            psPersonalInfo.setString(11, draft.guardianPhone);
 
             psPersonalInfo.executeUpdate();
 
@@ -92,6 +93,7 @@ public class Queries {
             psMedicalHistory.setString(3, draft.pastProblems);
             psMedicalHistory.setString(4, draft.medications);
             psMedicalHistory.setString(5, draft.allergies);
+            psMedicalHistory.executeUpdate();
 
             PreparedStatement psBillingInfo = conn.prepareStatement(sqlBillingInfo);
             psBillingInfo.setInt(1, patientID);
@@ -103,6 +105,7 @@ public class Queries {
             psBillingInfo.setString(7, draft.billingAddress);
             psBillingInfo.setString(8, draft.paymentMethod);
             psBillingInfo.setString(9, draft.cardNumber);
+            psBillingInfo.executeUpdate();
 
             conn.commit();
 

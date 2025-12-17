@@ -229,7 +229,7 @@ public class personalandcontactinfo {
                     draft.guardianName = guardianD;
                     draft.guardianPhone = guardianContact;
 
-                    medicalhistory.main(new String[] {});
+                    medicalhistory.open(draft);
                     frame.dispose();
                 }
             });

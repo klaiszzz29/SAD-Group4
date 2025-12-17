@@ -20,4 +20,5 @@ public class PatientFormDrafts {
         // Insurance
         String insuranceProvider, insuranceID, name, insuranceAddress, insurancePhone, billingAddress, paymentMethod,
                         cardNumber;
+
 }
